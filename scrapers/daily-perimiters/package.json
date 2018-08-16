@@ -10,7 +10,9 @@
   "license": "ISC",
   "dependencies": {
     "@mapbox/togeojson": "^0.16.0",
+    "@turf/turf": "^5.1.6",
     "aws-sdk": "^2.292.0",
+    "md5": "^2.2.1",
     "request": "^2.88.0",
     "superagent": "^3.8.3"
   }
