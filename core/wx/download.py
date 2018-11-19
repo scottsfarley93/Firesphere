@@ -1,4 +1,6 @@
+from datetime import timedelta
 from datetime import datetime
+
 import pandas as pd
 import os
 from util import get_weather_service_wrapper, validate_duration, format_date_for_service
@@ -42,7 +44,7 @@ def download_bbox(bbox, start, end, token=token):
     validate_duration(start, end)
     for stationid in station_list:
         station_obs = get_station_timeseries(service, stationid, start, end)
-        full_path = os.path.join(write_dir, stationid + ".csv")
+        full_path = os.path.join(write_dir, stationid + "_" + start.strftime("%Y-%m-%d") + "_" + end.strftime("%Y-%m-%d") + ".csv")
         if station_obs is not None:
             station_obs.to_csv(full_path)
             print ("[working] Wrote file: ", full_path, " with ", len(station_obs.index), " observations")
@@ -51,4 +53,7 @@ def download_bbox(bbox, start, end, token=token):
     print("[finished]")
 
 if __name__ == "__main__":
-    download_bbox(bbox, start, end)
+    while start <= end:
+        batch_end = start  + timedelta(days=delta)
+        download_bbox(bbox, start, batch_end)
+        start + timedelta(days=delta)

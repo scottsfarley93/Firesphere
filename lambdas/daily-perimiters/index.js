@@ -14,11 +14,7 @@ function main(event, context, callback){
     .then((kmlPerimiters)=>{
       console.log("[process] Got perimiters. Processing...")
         const seen = [];
-        try{
-          const geojsonPerimiters = kml2Geojson(kmlPerimiters);
-        }catch((err)=>{
-          return callback(err, null)
-        })
+        const geojsonPerimiters = kml2Geojson(kmlPerimiters);
         let perimeters = geojsonPerimiters.features.map((feature)=>{
           let nameComponents = feature.properties.name.split(" ")
           feature.properties.id = nameComponents[0]
@@ -28,7 +24,7 @@ function main(event, context, callback){
           feature.properties.lastUpdatedDate = nameComponents.pop();
           feature.properties.commonName = nameComponents.join(" ");
           feature.properties.lastUpdated = new Date(Date.parse(feature.properties.lastUpdatedDate + " " + feature.properties.lastUpdatedTime))
-          feature.geometry.hash = md5(feature.geometry);
+          feature.geometry.hash = md5(JSON.stringify(feature.geometry));
           delete feature.properties.styleUrl;
           delete feature.properties.styleHash;
           delete feature.properties.description;
@@ -36,15 +32,12 @@ function main(event, context, callback){
           delete feature.properties['fill-opacity'];
           delete feature.properties['styleMapHash'];
           feature.properties.area = turf.area(feature) * 0.000247105; //acres
-          console.log(feature)
           return feature
         }).filter((feature)=>{
           return feature.geometry.type != "Point"
         })
         const fileParams = getS3FileParams(geojsonPerimiters);
-        console.log(fileParams)
         s3.putObject(fileParams, (err, res)=>{
-          console.log(err, res)
           if (err) callback(err)
           console.log(JSON.stringify(res));
           callback(null, res)

@@ -105,7 +105,6 @@ def assemble_interpolation_training_data(service, n_neighbors):
             if os.path.exists( os.path.join(write_dir, station + ".csv")):
                 station_values = assemble_nearest_values_for_interpolation(service, station, n_neighbors)
                 full_df = full_df.append(station_values)
-            print(len(full_df.index))
         except:
             pass
     return full_df
@@ -115,5 +114,5 @@ def assemble_interpolation_training_data(service, n_neighbors):
 if __name__ == "__main__":
     service = get_weather_service_wrapper(token)
     training_data = assemble_interpolation_training_data(service, 5)
-    full_path = os.path.join(write_dir, 'training_data_aug.csv')
+    full_path = os.path.join(write_dir, 'training_data_sept.csv')
     training_data.to_csv(full_path)
